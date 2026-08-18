@@ -9,7 +9,8 @@ Personal academic website for Taehoon Kim, Associate Research Fellow at the Kore
 ## Structure
 
 - `index.html` — homepage, research, education, and contact information
-- `cv.html` — HTML curriculum vitae
+- `Taehoon_Kim_CV.pdf` — current curriculum vitae
+- `cv.html` — accessible HTML curriculum vitae
 - `styles.css` — responsive site styles
 
 The site is a framework-free static website designed for GitHub Pages and published from the `main` branch.
