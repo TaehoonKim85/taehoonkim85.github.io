@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#16283a">
+  <title>EduModel | Fair-share 손익분기 계산기</title>
+  <style>
+    :root { --navy:#16283a;--soft:#f3f6f9;--paper:#fff;--blue:#176f98;--teal:#086e63;--grey:#657589;--border:#dfe6ed;--risk:#ad3540;--mild:#a8611b; --radius:15px; }
+    * {box-sizing:border-box} body {margin:0;color:var(--navy);background:var(--soft);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",Arial,sans-serif} button,input,select{font:inherit}
+    header{background:var(--navy);color:#fff;padding:26px max(20px,calc((100vw - 1190px)/2));}
+    .brand{font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:#90c8d8;margin-bottom:5px}
+    h1{font-size:clamp(22px,3.2vw,32px);font-weight:750;letter-spacing:-.035em;margin:0 0 5px} header p{margin:0;color:#d5e0e9;font-size:13px}
+    main{max-width:1230px;margin:0 auto;padding:24px 20px 60px} .layout{display:grid;grid-template-columns:360px minmax(0,1fr);gap:18px;align-items:start}
+    section,.panel{background:var(--paper);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 1px 2px rgba(22,40,58,.025)}
+    aside.panel{padding:22px;position:sticky;top:14px} section{padding:22px}.layout>div{min-width:0}.table-section{min-width:0}
+    .aside-head{font-weight:800;font-size:17px;margin:0 0 2px}.sub{font-size:12px;color:var(--grey);margin:0 0 18px}.field{margin:0 0 17px}.field label,.field .lbl{display:block;font-size:12px;font-weight:700;margin:0 0 6px;color:#384a60}
+    .field select,.field input[type=number]{display:block;width:100%;color:#16283a;background:#fff;border:1px solid #c8d2dc;border-radius:8px;padding:9px 11px;min-height:40px}
+    .field select:focus,.field input:focus{outline:2px solid #63aed1;outline-offset:1px}
+    .field .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}.row .lbl{margin:0}.value{font-weight:700;font-size:13px;color:var(--blue);font-variant-numeric:tabular-nums}
+    .field input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer}
+    .smallhelp{font-size:11px;color:var(--grey);margin-top:4px}
+    .input-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.input-grid .field{margin-bottom:13px}
+    .seg{display:flex;gap:4px;padding:4px;border:1px solid var(--border);border-radius:10px;background:#f5f7f9}.seg button{background:transparent;border:0;border-radius:7px;padding:8px 10px;flex:1;cursor:pointer;font-size:12px;color:#4e6072}.seg button[aria-pressed=true]{background:#fff;color:var(--navy);box-shadow:0 1px 4px rgba(22,40,58,.12);font-weight:750}
+    .headline{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.headline h2{font-size:18px;margin:0 0 5px;font-weight:800}.tag{display:inline-block;color:#075b54;background:#e6f3ef;padding:4px 9px;font-size:11px;font-weight:800;border-radius:999px;white-space:nowrap}
+    .tag.warn{background:#fff0df;color:var(--mild)} .tag.danger{background:#fce9eb;color:var(--risk)}
+    .summary-note{color:var(--grey);font-size:12px;margin:0 0 18px}
+    .hero{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;margin-bottom:14px}
+    .tile{border:1px solid var(--border);background:#fbfcfd;padding:15px 16px;border-radius:12px;min-width:0}
+    .tile.prime{background:#eff8fa;border-color:#b4dbe5}.tile .k{font-size:12px;color:#4c6071;margin-bottom:4px}.tile .n{font-size:clamp(24px,3vw,35px);letter-spacing:-.035em;font-weight:850;line-height:1.23;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .tile .descr{font-size:11px;color:var(--grey);margin-top:5px}.mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .mini .tile .n{font-size:21px}.alert{border-left:4px solid var(--mild);background:#fffbf5;padding:10px 12px;margin-top:15px;font-size:12px;color:#5a4226;border-radius:3px 8px 8px 3px}
+    .alert.danger{border-color:var(--risk);background:#fff4f4;color:#6d3038}.meta{margin-top:15px;border-top:1px solid var(--border);padding-top:12px;color:var(--grey);font-size:12px}
+    .table-section{margin-top:18px}.table-section .headbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.table-section h2{margin:0;font-size:18px}
+    .actions{display:flex;align-items:center;gap:8px}.btn{border:1px solid #c4d3dc;color:#264257;background:#fff;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:750;cursor:pointer}.btn:hover{background:#eef6f8}
+    .scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;white-space:nowrap;font-size:12.5px}thead th{text-align:right;color:#536576;background:#f6f8fa;font-weight:800;border-bottom:1px solid #dbe3eb;padding:11px 10px}thead th:first-child{text-align:left} tbody tr{border-bottom:1px solid #edf0f3;cursor:pointer}tbody tr:hover{background:#f1f8fa}tbody tr.selected{background:#eaf5f8}td{padding:11px 10px;text-align:right;font-variant-numeric:tabular-nums}td:first-child{text-align:left;font-weight:700}td em{font-size:10px;color:#76889c;font-weight:500;font-style:normal}.bad{font-weight:800;color:var(--risk)}.good{font-weight:800;color:var(--teal)}
+    .barwrap{width:95px;display:inline-block;text-align:right}.bar{height:6px;background:#e5ebef;border-radius:10px;margin-top:3px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--blue)}.bar>i.bad{background:var(--risk)}
+    .footnote{font-size:12px;color:var(--grey);margin:13px 0 0}.card-note{font-size:12px;color:#596b78;border-radius:10px;background:#eff3f6;padding:14px 15px;margin-top:18px}
+    footer{margin-top:20px;color:#7d8b9b;font-size:11px}
+    @media(max-width:860px){.layout{grid-template-columns:1fr} aside.panel{position:static} .hero{grid-template-columns:1fr 1fr} .mini{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:550px){main{padding:12px 10px 30px}aside.panel,section{padding:16px}header{padding:20px 15px}.hero{grid-template-columns:1fr 1fr;gap:8px}.tile{padding:12px}.tile .n{font-size:25px}.mini{gap:8px}.mini .tile .n{font-size:18px}.headline{flex-direction:column}.tag{align-self:start}}
+  </style>
+</head>
+<body>
+<header>
+ <div class="brand">EDUMODEL / MUSIC ACADEMY</div>
+ <h1>Fair-share 손익분기 계산기</h1>
+ <p>세종 신도시 15개 동 · 실제 학원/교습소 수 · 2026년 10월 학령인구 및 무이동 코호트 전망</p>
+</header>
+<main>
+<div class="layout">
+  <aside class="panel">
+    <h2 class="aside-head">입력 및 가정</h2>
+    <p class="sub">α=1은 신규 시설에 불리함을 부여하지 않는 중립 기준선이야. 추정값은 아님.</p>
+    <noscript><p style="padding:10px 12px;border:1px solid #ae6d28;border-radius:8px;background:#fff3db;color:#58380c">이 화면에서는 계산기가 실행되지 않습니다. HTML 파일을 다운로드하여 Safari·Chrome·Edge 등 일반 브라우저에서 열어주세요.</p></noscript>
+    <div class="field"><label for="dong">분석 지역</label><select id="dong" aria-label="분석 지역"><option value="해밀동" selected>해밀동</option><option value="집현동">집현동</option><option value="한솔동">한솔동</option><option value="다정동">다정동</option><option value="고운동">고운동</option><option value="종촌동">종촌동</option><option value="도담동">도담동</option><option value="새롬동">새롬동</option><option value="반곡동">반곡동</option><option value="어진동">어진동</option><option value="아름동">아름동</option><option value="소담동">소담동</option><option value="보람동">보람동</option><option value="대평동">대평동</option><option value="나성동">나성동</option></select></div>
+    <div class="field"><div class="lbl">인구 기준</div><select id="horizon"><option value="avg" selected>개원 후 1~3년 평균 (무이동)</option><option value="now">현재 (2026년 10월)</option><option value="h1">1년 후 (2027년 10월)</option><option value="h2">2년 후 (2028년 10월)</option><option value="h3">3년 후 (2029년 10월)</option></select><div class="smallhelp">기준월 1세별 인구를 나이만 증가시킴. 이사·진입·출생은 반영하지 않음.</div></div>
+    <div class="field"><div class="lbl">신규 개원 유형</div><div class="seg" role="group" aria-label="신규 개원 유형"><button type="button" id="academy" aria-pressed="true">음악학원 (w=1)</button><button type="button" id="studio" aria-pressed="false">교습소 (w=κ)</button></div></div>
+    <div class="field"><div class="row"><label class="lbl" for="alpha">신규 진입자 상대 매력도 α</label><span class="value" id="alpha-val">1.00</span></div><input type="range" id="alpha" min="0.5" max="1" step="0.05" value="1"><div class="smallhelp">기준 1.00, 진입자 불리 시 0.50~0.95. α는 미추정 가정.</div></div>
+    <div class="field"><div class="row"><label class="lbl" for="kappa">교습소 가중치 κ</label><span class="value" id="kappa-val">0.25</span></div><input type="range" id="kappa" min="0.1" max="1" step="0.05" value="0.25"><div class="smallhelp">교습소 1곳의 상대적 시장배분 가중치. 실제 재원생 비율 아님.</div></div>
+    <div class="input-grid">
+      <div class="field"><label for="price">신규 계획 월 교습비 (만원/명)</label><input type="number" id="price" min="1" step="1" value="16"></div>
+      <div class="field"><label for="fixed">월 고정비 (만원)</label><input type="number" id="fixed" min="0" step="10" value="300"></div>
+    </div>
+    <div class="field"><div class="row"><label class="lbl" for="variable">변동비율 v</label><span class="value" id="variable-val">20%</span></div><input type="range" id="variable" min="0" max="70" step="5" value="20"></div>
+    <div class="field"><div class="row"><label class="lbl" for="participation">가정 수강참여율 p</label><span class="value" id="participation-val">20%</span></div><input type="range" id="participation" min="5" max="50" step="1" value="20"><div class="smallhelp">조건부 배분 원생·월 영업이익 산출에만 사용. 핵심 p_BE 계산에는 불필요.</div></div>
+    <button type="button" class="btn" id="reset" style="width:100%">가정 초기화 (α=1)</button>
+  </aside>
+  <div>
+    <section>
+      <div class="headline"><h2><span id="dong-title">해밀동</span> · 신규 <span id="entry-title">음악학원</span></h2><span id="status" class="tag">조건부 기준선</span></div>
+      <p class="summary-note">기준 인구 <strong id="pop-label">—</strong>명 · 기존 음악학원 <strong id="academy-label">—</strong>개, 교습소 <strong id="studio-label">—</strong>개 · 현재 시설 합계는 실제 관측값</p>
+      <div class="hero">
+        <div class="tile prime"><div class="k">손익분기 필요 수강참여율 p_BE</div><div class="n" id="pbe">—</div><div class="descr">낮을수록 동일 비용·가정에서 유리</div></div>
+        <div class="tile"><div class="k">월 손익분기 원생 B</div><div class="n" id="be">—</div><div class="descr">정수 원생 기준은 올림</div></div>
+      </div>
+      <div class="mini">
+        <div class="tile"><div class="k">가정상 배분 원생 E</div><div class="n" id="E">—</div><div class="descr">p 입력값 기준</div></div>
+        <div class="tile"><div class="k">E / B</div><div class="n" id="ratio">—</div><div class="descr">가정상 충족비율</div></div>
+        <div class="tile"><div class="k">조건부 월 영업이익</div><div class="n" id="profit">—</div><div class="descr">만원, 투자·세금 제외</div></div>
+      </div>
+      <div id="alert" class="alert" role="status">—</div>
+      <div class="meta">유효 경쟁공급 <b id="eff-supply">—</b>개(가중) · 신규 유효가중 <b id="entrant-weight">—</b> · 신규 배분몫 <b id="share">—</b></div>
+    </section>
+    <section class="table-section">
+      <div class="headbar"><h2>15개 동 비교 <span style="color:#758696;font-weight:500;font-size:12px">동일한 사용자 가정 적용</span></h2><div class="actions"><button class="btn" type="button" id="export">현재 결과 CSV 저장</button></div></div>
+      <div class="scroll"><table><thead><tr><th>동 / 순위</th><th>7~12세 인구</th><th>학원</th><th>교습소</th><th>가중 공급</th><th>필요 참여율 p_BE</th><th>배분 E</th><th>월 영업이익</th></tr></thead><tbody id="tbody"></tbody></table></div>
+      <p class="footnote">동을 클릭하면 좌측 계산기로 이동. 순위는 현재 가정에서 p_BE 오름차순이며, α·κ·코호트·가격·비용에 따라 달라짐. 나성동은 주변 동에서 통학하는 아동을 반영하지 못하므로 특히 주의.</p>
+    </section>
+    <div class="card-note"><strong>해석상 한계.</strong> 현재 데이터는 등록 음악학원·교습소와 주민등록 연령 인구의 단면이야. 공정몫은 실제 수강확률·재원생·가격경쟁·동 간 이동·신규 유발수요·평판 차이를 추정하지 않아. α, κ 및 비용을 바꾸며 가능한 시나리오를 판단하는 도구이며 수익 예측값이 아니야. 미래 코호트는 2026년 10월 인구를 같은 행정동에 그대로 둔 단순 전망이야.</div>
+    <footer>자료: EduModel 정제 시설명부 및 공식 주소 매칭 (시설 2026-11-16), 행정동 1세별 인구 (2026-10). CSV와 Python 생성·QA 및 Stata 재현 파일은 배포 ZIP에 포함. 인터넷 연결 불필요.</footer>
+  </div>
+</div>
+</main>
+<script id="market-data" type="application/json">[{"admin_dong_code":"3611052500","admin_dong_name":"해밀동","academy_count":"5","studio_count":"2","population_2026_10":"2663","population_h1":"2695","population_h2":"2776","population_h3":"2769","population_h1_h3_mean":"2746.66667","original_active_music":"7"},{"admin_dong_code":"3611055800","admin_dong_name":"집현동","academy_count":"0","studio_count":"3","population_2026_10":"1305","population_h1":"1444","population_h2":"1512","population_h3":"1568","population_h1_h3_mean":"1508","original_active_music":"3"},{"admin_dong_code":"3611051000","admin_dong_name":"한솔동","academy_count":"3","studio_count":"2","population_2026_10":"1354","population_h1":"1223","population_h2":"1048","population_h3":"936","population_h1_h3_mean":"1069","original_active_music":"5"},{"admin_dong_code":"3611058000","admin_dong_name":"다정동","academy_count":"11","studio_count":"4","population_2026_10":"2762","population_h1":"2616","population_h2":"2427","population_h3":"2219","population_h1_h3_mean":"2420.66667","original_active_music":"15"},{"admin_dong_code":"3611055000","admin_dong_name":"고운동","academy_count":"14","studio_count":"6","population_2026_10":"3412","population_h1":"3140","population_h2":"2847","population_h3":"2524","population_h1_h3_mean":"2837","original_active_music":"20"},{"admin_dong_code":"3611054000","admin_dong_name":"종촌동","academy_count":"8","studio_count":"6","population_2026_10":"2218","population_h1":"1999","population_h2":"1811","population_h3":"1617","population_h1_h3_mean":"1809","original_active_music":"14"},{"admin_dong_code":"3611052000","admin_dong_name":"도담동","academy_count":"7","studio_count":"5","population_2026_10":"1794","population_h1":"1635","population_h2":"1511","population_h3":"1330","population_h1_h3_mean":"1492","original_active_music":"12"},{"admin_dong_code":"3611051500","admin_dong_name":"새롬동","academy_count":"20","studio_count":"5","population_2026_10":"2807","population_h1":"2612","population_h2":"2292","population_h3":"2041","population_h1_h3_mean":"2315","original_active_music":"25"},{"admin_dong_code":"3611055600","admin_dong_name":"반곡동","academy_count":"8","studio_count":"4","population_2026_10":"1379","population_h1":"1348","population_h2":"1283","population_h3":"1197","population_h1_h3_mean":"1276","original_active_music":"12"},{"admin_dong_code":"3611052300","admin_dong_name":"어진동","academy_count":"5","studio_count":"3","population_2026_10":"951","population_h1":"903","population_h2":"833","population_h3":"764","population_h1_h3_mean":"833.33333","original_active_music":"8"},{"admin_dong_code":"3611053000","admin_dong_name":"아름동","academy_count":"18","studio_count":"3","population_2026_10":"2023","population_h1":"1833","population_h2":"1665","population_h3":"1486","population_h1_h3_mean":"1661.33333","original_active_music":"21"},{"admin_dong_code":"3611055500","admin_dong_name":"소담동","academy_count":"15","studio_count":"7","population_2026_10":"2006","population_h1":"1879","population_h2":"1726","population_h3":"1592","population_h1_h3_mean":"1732.33333","original_active_music":"22"},{"admin_dong_code":"3611056000","admin_dong_name":"보람동","academy_count":"10","studio_count":"10","population_2026_10":"1706","population_h1":"1629","population_h2":"1476","population_h3":"1327","population_h1_h3_mean":"1477.33333","original_active_music":"20"},{"admin_dong_code":"3611057000","admin_dong_name":"대평동","academy_count":"5","studio_count":"7","population_2026_10":"818","population_h1":"795","population_h2":"756","population_h3":"710","population_h1_h3_mean":"753.66667","original_active_music":"12"},{"admin_dong_code":"3611051800","admin_dong_name":"나성동","academy_count":"12","studio_count":"15","population_2026_10":"1158","population_h1":"1067","population_h2":"988","population_h3":"890","population_h1_h3_mean":"981.66667","original_active_music":"27"}]</script>
+<script>
+'use strict';
+const D=JSON.parse(document.getElementById('market-data').textContent);
+const $=(id)=>document.getElementById(id);
+const init={horizon:'avg',entrant:'academy',alpha:1,kappa:0.25,price:16,fixed:300,variable:20,participation:20};
+let entrant=init.entrant, dataRows=[];
+const fmt=(n,max=1)=>Number(n).toLocaleString('ko-KR',{maximumFractionDigits:max,minimumFractionDigits:max});
+const intfmt=(n)=>Number(n).toLocaleString('ko-KR',{maximumFractionDigits:0});
+const getPop=(d)=>{const s=$('horizon').value;return Number(s==='avg'?d.population_h1_h3_mean:s==='now'?d.population_2026_10:s==='h1'?d.population_h1:s==='h2'?d.population_h2:d.population_h3)};
+const inputs=()=>({alpha:Number($('alpha').value),kappa:Number($('kappa').value),P:Number($('price').value),F:Number($('fixed').value),v:Number($('variable').value)/100,p:Number($('participation').value)/100});
+function calc(d,a){
+ const N=getPop(d),A=Number(d.academy_count),T=Number(d.studio_count),w=entrant==='academy'?1:a.kappa,S=A+a.kappa*T,tw=a.alpha*w;
+ if(!Number.isFinite(N)||N<=0||!Number.isFinite(a.P)||a.P<=0||!Number.isFinite(a.F)||a.F<0||a.v>=1||a.v<0||a.alpha<=0||w<=0||S+tw<=0) return null;
+ const B=a.F/(a.P*(1-a.v)); // monetary units in 10,000 KRW; cancel out
+ const share=tw/(S+tw),E=a.p*N*share,pBE=B/(N*share),profit=E*a.P*(1-a.v)-a.F;
+ return {dong:d.admin_dong_name,N,A,T,S,tw,share,E,B,pBE,profit,ratio:B>0?E/B:NaN};
+}
+function update(){
+ const a=inputs();$('alpha-val').textContent=a.alpha.toFixed(2);$('kappa-val').textContent=a.kappa.toFixed(2);$('variable-val').textContent=(a.v*100).toFixed(0)+'%';$('participation-val').textContent=(a.p*100).toFixed(0)+'%';
+ $('academy').setAttribute('aria-pressed',String(entrant==='academy'));$('studio').setAttribute('aria-pressed',String(entrant==='studio'));
+ dataRows=D.map(d=>calc(d,a)).filter(x=>x!==null).sort((x,y)=>x.pBE-y.pBE);
+ const current=dataRows.find(x=>x.dong===$('dong').value);
+ $('dong-title').textContent=$('dong').value;$('entry-title').textContent=entrant==='academy'?'음악학원':'음악교습소';
+ const clear=['pop-label','academy-label','studio-label','pbe','be','E','ratio','profit','eff-supply','entrant-weight','share'];
+ if(!current){clear.forEach(id=>$(id).textContent='—');$('status').textContent='입력값 확인';$('status').className='tag danger';$('alert').textContent='교습비는 양수, 월 고정비는 0 이상이어야 해.';return;}
+ $('pop-label').textContent=intfmt(current.N);$('academy-label').textContent=current.A;$('studio-label').textContent=current.T;
+ $('pbe').textContent=fmt(current.pBE*100,1)+'%';$('be').textContent=fmt(current.B,1)+'명';$('E').textContent=fmt(current.E,1)+'명';$('ratio').textContent=Number.isFinite(current.ratio)?fmt(current.ratio,2)+'배':'해당없음';$('profit').textContent=(current.profit>=0?'+':'')+fmt(current.profit,1);
+ $('eff-supply').textContent=fmt(current.S,2);$('entrant-weight').textContent=fmt(current.tw,2);$('share').textContent=fmt(current.share*100,2)+'%';
+ const danger=current.pBE>1+1e-12, caution=current.dong==='나성동';
+ $('status').textContent=danger?'해당 가정하 손익분기 불가능':caution?'동 경계 통학권 주의':'가정상 계산 가능';
+ $('status').className='tag'+(danger?' danger':caution?' warn':'');
+ const al=$('alert');al.className='alert'+(danger?' danger':'');
+ if(danger)al.textContent='필요 참여율이 100%를 초과해. 현재 학원·교습소 수, 비용, α·κ·동내 시장배분 가정에서는 손익분기가 불가능해. 이는 실제 창업 불가능 판정은 아니야.';
+ else if(caution)al.textContent='나성동은 상업 중심지이므로 동 밖에서 유입되는 학생이 빠져 있어. 이 동의 결과를 실제 과잉공급·창업가능성으로 해석하지 마.';
+ else if(current.share>0.3)al.textContent='주의: 현재 균등매력도·교습소 가중치 가정에서 신규 시설에 '+fmt(current.share*100,1)+'%의 시장몫이 배분돼. 특히 기존 시설이 교습소 위주인 동에서는 신규 학원의 배분 원생이 비현실적으로 커질 수 있어.';
+ else al.textContent='손익분기 참여율은 조건부 문턱이야. 실제 수강참여율·신규 학원의 점유율은 관측하거나 추정하지 않았어.';
+ const tb=$('tbody');tb.replaceChildren();
+ dataRows.forEach((r,i)=>{
+   const tr=document.createElement('tr');if(r.dong===$('dong').value)tr.className='selected';
+   const cells=[`${r.dong} <em>(${i+1})</em>`,intfmt(r.N),String(r.A),String(r.T),fmt(r.S,2),`<div class="barwrap"><span class="${r.pBE>1?'bad':''}">${fmt(r.pBE*100,1)}%</span><div class="bar"><i class="${r.pBE>1?'bad':''}" style="width:${Math.max(0,Math.min(100,r.pBE*100))}%"></i></div></div>`,fmt(r.E,1)+'명',`<span class="${r.profit>=0?'good':'bad'}">${(r.profit>=0?'+':'')+fmt(r.profit,1)}만원</span>`];
+   cells.forEach(x=>{const td=document.createElement('td');td.innerHTML=x;tr.appendChild(td)});
+   tr.addEventListener('click',()=>{$('dong').value=r.dong;update();window.scrollTo({top:0,behavior:'smooth'})});tb.appendChild(tr);
+ });
+}
+function exportCsv(){
+ const a=inputs();const h=$('horizon').value;
+ const rows=[['admin_dong_name','population_basis','population_7_12','academy_count','studio_count','alpha_assumed','kappa_assumed','entrant_kind','existing_effective_supply','fair_share','break_even_students','required_participation_percent','assumed_participation_percent','conditional_students','monthly_tuition_10000won','fixed_cost_10000won','variable_cost_fraction','conditional_profit_10000won','not_viable_under_assumptions']];
+ dataRows.forEach(r=>rows.push([r.dong,h,r.N,r.A,r.T,a.alpha,a.kappa,entrant,r.S,r.share,r.B,r.pBE*100,a.p*100,r.E,a.P,a.F,a.v,r.profit,r.pBE>1]));
+ const csv='\uFEFF'+rows.map(row=>row.map(v=>{const x=String(v);return /[",\n]/.test(x)?'"'+x.replaceAll('"','""')+'"':x}).join(',')).join('\r\n');
+ const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download='EduModel_FairShare_Results_'+h+'_alpha_'+a.alpha.toFixed(2)+'.csv';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+if(!$('dong').options.length){D.forEach(d=>{const o=document.createElement('option');o.value=d.admin_dong_name;o.textContent=d.admin_dong_name;$('dong').appendChild(o)});} $('dong').value='해밀동';
+['alpha','kappa','variable','participation','price','fixed'].forEach(id=>$(id).addEventListener('input',update));
+['dong','horizon'].forEach(id=>{ $(id).addEventListener('change',update); $(id).addEventListener('input',update); });
+$('academy').addEventListener('click',()=>{entrant='academy';update()});$('studio').addEventListener('click',()=>{entrant='studio';update()});
+$('reset').addEventListener('click',()=>{$('horizon').value='avg';$('dong').value='해밀동';$('alpha').value=init.alpha;$('kappa').value=init.kappa;$('price').value=init.price;$('fixed').value=init.fixed;$('variable').value=init.variable;$('participation').value=init.participation;entrant='academy';update()});$('export').addEventListener('click',exportCsv);
+update();
+</script>
+</body>
+</html>
